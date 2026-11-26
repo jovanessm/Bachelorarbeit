@@ -6,11 +6,11 @@
 - Workers and service time per backend (e.g. 4 × 40 ms).
 - Testbed transport: plain asyncio TCP vs. aiohttp.
 - Threshold for "large backlog" in H2 (proposal: queue ≥ 3 × μT at end of slowdown).
-- 🟡 Add 1% random errors to the healthy (no-trigger) scenario, so the costs of retry budget and circuit breaker become visible.
-- 🟡 Extend H4 with circuit breaker false trips, and H5 with "pairs with the circuit breaker recover no better than their server-side mechanism alone".
+- ✅ Add 1% random errors to the healthy (no-trigger) scenario, so the costs of retry budget and circuit breaker become visible.
+- ✅ Extend H4 with circuit breaker false trips, and H5 with "pairs with the circuit breaker recover no better than their server-side mechanism alone".
 - Exact simulator grid values (loads, durations).
-- 🟡 Selection rule for extended testbed runs, fixed before the main runs: at most one repetition per cell (configuration × scenario), e.g. the first non-recovering one or one picked at random; priority if time is short: baseline → cells near the recovery boundary → cells where the simulator disagrees. Other non-recovering repetitions are labelled "non-recovery, not extended". Estimate ~10–15 runs, 2–2.5 h (update `03-experiments.md` once decided).
-- 🟡 Timeouts: one client timeout T for all runs; each retry gets a fresh deadline (attempt time + T); the gateway uses the remaining deadline as its wait limit for the backend, so the circuit breaker counts slow calls as failures.
+- ✅ Selection rule for extended testbed runs, fixed before the main runs: at most one repetition per cell (configuration × scenario), e.g. the first non-recovering one or one picked at random; priority if time is short: baseline → cells near the recovery boundary → cells where the simulator disagrees. Other non-recovering repetitions are labelled "non-recovery, not extended". Estimate ~10–15 runs, 2–2.5 h (update `03-experiments.md` once decided).
+- ✅ Timeouts: one client timeout T for all runs; each retry gets a fresh deadline (attempt time + T); the gateway uses the remaining deadline as its wait limit for the backend, so the circuit breaker counts slow calls as failures.
 
 ## To-dos
 - [ ] Exposé v2 due **24.11.2026**: update to new framing, answer Prof. Hahn's 3 questions (mechanism verification, data reduction, ResilienceBench), corrected references.

@@ -23,7 +23,7 @@ load generator (client) ──► gateway ──► backend A  (healthy)
 | 10 | Setup script | ulimit, backlog, CPU pinning, Docker |
 | 11 | Shared protocol | Request id, attempt number, end-to-end deadline |
 
-Share protocol and data formats between simulator and testbed, but implement mechanisms separately in each (keeps them independent for verification) 🟡.
+Share protocol and data formats between simulator and testbed, but implement mechanisms separately in each (keeps them independent for verification) ✅.
 
 ## Key design choices
 - **Service time ✅:** `asyncio.sleep` inside a fixed number of workers (capacity = workers ÷ service time, e.g. 4 ÷ 40 ms = 100 req/s). Plus 2 to 3 CPU-work runs as robustness check. (Unlike ResilienceBench, where injected delays use no server capacity.)
@@ -31,6 +31,8 @@ Share protocol and data formats between simulator and testbed, but implement mec
 - **Retries ✅:** only the client retries. R = 3 (4 attempts total); retry on timeouts and on error/rejection responses; exponential backoff 100 / 200 / 400 ms with full jitter (random wait in [0, backoff]); T = 1 s per attempt, fresh deadline per retry. Backoff is part of the realistic client baseline, not a fifth mitigation: it delays retries but does not reduce them, so the stuck state is still possible. Use this client from the spike and week-2 checkpoint on. Runner waits a ~5 s grace period at the end of each run.
 - **Retry budget ✅:** one shared token bucket for the whole generator.
 - **Stale work:** baseline backends keep processing requests whose client already gave up.
+- **Trigger ✅:** slowdown factor k = 2: backend B's service time doubles (40 → 80 ms), so its capacity halves (100 → 50 req/s) for the slowdown duration. Backend A is unaffected.
+- **Deadline drop ✅:** "drop if it can't finish in time" (remaining deadline < expected service time), not only "drop if already expired". The expired-only variant stayed stuck in the prototype with the realistic client (see `10-prototype-findings.md`); optionally report it as a comparison.
 - **Queues:** explicit app-level queues; all hidden limits (listen backlog, connections) must be above μT.
 - **Bounded queue note:** a limit above μT stays stuck; a limit below μT acts as load shedding.
 
@@ -42,11 +44,17 @@ Share protocol and data formats between simulator and testbed, but implement mec
 | Deadline drop | Server | Gateway and backend |
 | Load shedding | Server | Gateway |
 
-## Logging ✅
-- Client: one row per attempt, kept in memory, written after the run.
-- Servers: only counters + queue length, sampled once per second.
-- Mechanism telemetry per second: tokens, retries denied, breaker state changes, dropped, shed.
-- No per-request print/logging/file writes. Measure overhead once (target < 1 to 2%).
+## Logging
+General ✅: per-attempt rows only at the client, kept in memory and written after the run; servers only counters + queue length sampled once per second; no per-request print/logging/file writes; overhead measured once (target < 1 to 2%). Simulator writes the same files and fields.
+
+Fields ✅:
+- **Client, per attempt:** run_id, request_id, attempt (0 = first), backend, send_ts, deadline_ts, end_ts, outcome (`ok` / `timeout` / `rejected_shed` / `rejected_breaker` / `error`), latency_ms.
+- **Client, per second:** intended vs. actual send rate, retries scheduled, retries denied by budget, budget tokens, requests in flight.
+- **Gateway, per second and backend:** forwarded, shed, breaker state (+ each state change with timestamp), breaker rejections, dropped as expired, in flight.
+- **Backend A/B, per second:** queue length, arrivals, completed, completed after deadline, dropped by deadline drop, busy workers, time spent on expired work, trigger on/off.
+- **Run metadata:** scenario, configuration, seed, machine, calibration version, Git commit. **Host, per second:** CPU, memory, open file descriptors.
+
+Metric sources: goodput and amplification and healthy-state cost from client rows; attempts/s from client per-second log; queue and trend from gateway + backends; wasted work from backends; mechanism telemetry from client (budget), gateway (breaker, shedding), backend (deadline drop); run flagging from generator lag and host metrics.
 
 ## Calibration ✅
 Separate script on the same testbed, no trigger, no retries, load ramp. Measures capacity μ, service-time spread, logging overhead, generator check, queue/OS limits → `calibration.json`, used by scenario generator (`rate = ρ × μ`) and simulator. Rerun per machine and after changes affecting capacity.

@@ -16,10 +16,10 @@
 
 ❓ Official start / registration date and how the 8 weeks map onto these dates are not decided yet.
 
-## 8-week plan 🟡 (+ weeks 9–10 buffer; writing runs alongside from week 1)
+## 8-week plan ✅ (+ weeks 9–10 buffer; writing runs alongside from week 1)
 | Week | Focus | Exit deliverable |
 |---|---|---|
-| 0 (before start) | 1–2 day spike on the Mac: minimal testbed shows stuck baseline + recovering no-retry control 🟡 | Go for topic |
+| 0 (before start) | 1–2 day spike on the Mac: minimal testbed shows stuck baseline + recovering no-retry control ✅ | Go for topic |
 | 1 | Literature check, frozen definitions/parameters, simulator baseline + controls, minimal testbed | Research protocol, outline |
 | 2 | Open-loop generator, testbed baseline, day-1 checks (pool limits, ulimit, stale work, hidden queue limits) | **Checkpoint:** both environments show stuck baseline + recovering no-retry control |
 | 3 | All 4 mechanisms in simulator, unit tests, pilot runs; analytical model | Simulator ready |

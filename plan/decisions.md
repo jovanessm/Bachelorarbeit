@@ -16,3 +16,4 @@
 | 2026-11-23 | Monorepo with `plan/`, `experiment/`, `thesis/` |
 | 2026-11-23 | Hypotheses trimmed to H1–H5 + simulator/testbed agreement criterion |
 | 2026-11-23 | Client retries: R = 3, retry on timeouts and errors, exponential backoff 100/200/400 ms with full jitter, T = 1 s per attempt |
+| 2026-11-23 | Simulator grid: 5 loads (50–90%) × 6 slowdown durations (1–40 s), slowdown factor k = 2, 10 seeds (3,300 runs) |
