@@ -2,7 +2,7 @@
 
 ## Research questions ✅
 1. **RQ1, Vulnerability:** Under which baseline loads and slowdown durations does an unprotected service chain with client retries fail to recover after the slowdown ends?
-2. **RQ2, Strategy selection:** Which single mitigation (retry budget, circuit breaker, deadline drop, load shedding) prevents or ends the failure under which conditions, and at what cost in normal operation?
+2. **RQ2, Strategy selection:** Which single mitigation (core: retry budget, deadline drop; phase 2 if time: circuit breaker, load shedding) prevents or ends the failure under which conditions, and at what cost in normal operation?
 3. **RQ3, Combination:** Under which conditions does combining a client-side and a server-side mitigation recover where neither does alone, and when is a single mitigation sufficient?
 
 ## Hypotheses ✅
@@ -10,8 +10,8 @@
 |---|---|---|
 | H1 | Above a load-dependent slowdown duration, the unprotected chain ends in metastability-consistent non-recovery, while the no-retry control under the same trigger recovers. | RQ1 |
 | H2 | After a large stale backlog has formed (TODO: define large stale backlog: e.g. N ≥ 3 × μT at the end of the slowdown ❓), retry budget alone recovers more slowly than deadline drop alone. | RQ2 |
-| H3 ✅ | Load shedding restores recovery only if its queue limit is at most about μT; with a higher limit the system stays stuck. The circuit breaker restores recovery, but fails all requests to the slowed backend while open, so its time to recovery grows with the open time. (Rewritten 2026-11-23 after prototype, see `10-prototype-findings.md`.) | RQ2 |
-| H4 | In normal operation, retry budget and deadline drop cost almost nothing, while load shedding rejects a measurable share of requests at the higher load level. | RQ2 |
+| H3 (phase 2 only) | Load shedding restores recovery only if its queue limit is at most about μT; with a higher limit the system stays stuck. The circuit breaker restores recovery, but fails all requests to the slowed backend while open, so its time to recovery grows with the open time. (Rewritten 2026-11-23 after prototype, see `10-prototype-findings.md`.) | RQ2 |
+| H4 | In normal operation (incl. 1% random errors), retry budget and deadline drop cost almost nothing: goodput and p99 request latency within a few % of the baseline. Phase 2 adds: load shedding rejects a measurable share at the higher load; circuit breaker false trips. | RQ2 |
 | H5 | Retry budget + deadline drop recovers at high load with long slowdowns, where neither mechanism recovers alone, while at low load with short slowdowns a single mechanism is enough. | RQ3 |
 | Criterion | Simulator and testbed agree on the outcome class in ≥ 80% of validation scenarios. | Methods |
 

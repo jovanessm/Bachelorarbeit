@@ -2,8 +2,8 @@
 
 ## Decisions ❓
 - Map the 8-week plan onto official dates (start/registration date).
-- Retry budget bucket capacity C (proposal ~10 tokens, starts full).
-- Budget ratio; breaker threshold; shedding limit (fix before main runs; retry settings decided, see `02-system-design.md`).
+- ✅ Retry budget: b = 20%, C = 10 tokens (starts full).
+- Phase 2 only (fix at the go decision, end of week 4): breaker threshold and open time; shedding limit L (+ sweep for H3).
 - Workers and service time of the backend (e.g. 4 × 40 ms).
 - Testbed transport: plain asyncio TCP vs. aiohttp.
 - Threshold for "large backlog" in H2 (proposal: queue ≥ 3 × μT at end of slowdown).

@@ -22,14 +22,19 @@
 | 0 (before start) | 1–2 day spike on the Mac: minimal testbed shows stuck baseline + recovering no-retry control ✅ | Go for topic |
 | 1 | Literature check, frozen definitions/parameters, simulator baseline + controls, minimal testbed | Research protocol, outline |
 | 2 | Open-loop generator, testbed baseline, day-1 checks (pool limits, ulimit, stale work, hidden queue limits) | **Checkpoint:** both environments show stuck baseline + recovering no-retry control |
-| 3 | All 4 mechanisms in simulator, unit tests, pilot runs; analytical model | Simulator ready |
-| 4 | All 4 mechanisms in testbed, telemetry, calibration | Testbed ready |
-| 5 | Main simulator grid + testbed runs (nights) | Raw dataset |
-| 6 | Analysis, decision guide, guide check | Figures, tables, guide |
+| 3 | Core mechanisms (retry budget, deadline drop) in simulator, unit tests, positive controls; analytical model | Simulator ready |
+| 4 | Core mechanisms in testbed, telemetry, calibration | Testbed ready; **go/no-go for phase 2** |
+| 5 | Core simulator grid + testbed runs (nights); if go: breaker + shedding in simulator | Raw dataset |
+| 6 | Analysis, decision guide, guide check; if go: phase 2 simulator runs (testbed only if time) | Figures, tables, guide |
 | 7 | Full draft | Draft |
 | 8 | Review, essential reruns, references, reproduction package | Submission-ready |
 
-**Cut order if late:** testbed pairs other than budget + deadline drop → testbed reps (5 → 3) → number of scenarios. Never cut: controls, mechanism verification, simulator vs. testbed check.
+**Core parameters frozen by end of week 1 ✅:** b = 20%, C = 10, nominal S = 40 ms, T, R, backoff, k.
+
+## Phase 2 go/no-go (end of week 4) ✅
+Go only if: the week-2 checkpoint passed, both core mechanisms pass their positive controls in simulator and testbed, and the schedule has not slipped. Phase 2 parameters (breaker threshold and open time, shedding limit L) are fixed at the go decision, before any phase 2 run. No-go: circuit breaker and load shedding → future work, with the analytical predictions from `04`.
+
+**Cut order if late:** see `03-experiments.md` ("only if time" items → phase 2 testbed → phase 2 entirely → testbed reps 5 → 3 → scenarios). Never cut: controls, mechanism verification, simulator vs. testbed check.
 
 ## Fallback (if week-2 checkpoint fails) ✅ drafted
 Narrower study of post-overload recovery speed, stating clearly that metastability was not demonstrated.

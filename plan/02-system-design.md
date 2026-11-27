@@ -11,8 +11,8 @@ load generator (client) ──► gateway ──► backend  (gets the slowdown 
 | # | Component | Role |
 |---|---|---|
 | 1 | Load generator | Open-loop Poisson arrivals, timeouts, retries, **retry budget**, per-attempt log |
-| 2 | Gateway | Forwarding, **circuit breaker**, **load shedding**, deadline check (expired only) |
-| 3 | Backend | FIFO queue (`asyncio.Queue`), N workers, **deadline drop**, trigger endpoint |
+| 2 | Gateway | Forwarding, deadline check (expired only); phase 2: **circuit breaker** |
+| 3 | Backend | FIFO queue (`asyncio.Queue`), N workers, **deadline drop**, trigger endpoint; phase 2: **load shedding** (admission on N) |
 | 4 | Simulator | Own `heapq` event loop + client/gateway/backend modules ✅ |
 | 5 | Scenario schema + generator | YAML + pydantic, generates grid |
 | 6 | Runner | Runs scenarios in random order, triggers, collects, flags bad runs, progress file |
@@ -28,7 +28,7 @@ Share protocol and data formats between simulator and testbed, but implement mec
 - **Service time ✅:** `asyncio.sleep` inside a fixed number of workers (capacity = workers ÷ service time, e.g. 4 ÷ 40 ms = 100 req/s). Plus 2 to 3 CPU-work runs as robustness check. (Unlike ResilienceBench, where injected delays use no server capacity.)
 - **Load ✅:** Poisson arrivals, open-loop (generator never waits for responses). Log intended vs. actual send rate.
 - **Retries ✅:** only the client retries. R = 3 (4 attempts total); retry on timeouts and on error/rejection responses; exponential backoff 100 / 200 / 400 ms with full jitter (random wait in [0, backoff]); T = 1 s per attempt, fresh deadline per retry (no end-to-end deadline; total request latency is reported as a secondary metric). Backoff is part of the realistic client baseline, not a fifth mitigation: it delays retries but does not reduce them, so the stuck state is still possible. Use this client from the spike and week-2 checkpoint on. Runner waits a ~5 s grace period at the end of each run.
-- **Retry budget ✅:** one shared token bucket for the whole generator.
+- **Retry budget ✅:** one token bucket in the generator: each original request adds b = 0.2 tokens, each retry costs 1 token, capacity C = 10, starts full (2026-11-27).
 - **Stale work:** the baseline backend keeps processing requests whose client already gave up.
 - **Trigger ✅:** slowdown factor k = 2: the backend's service time doubles (40 → 80 ms), so its capacity halves (100 → 50 req/s) for the slowdown duration.
 - **Deadline drop ✅:** "drop if it can't finish in time": the backend drops a request when a worker takes it if `now + S ≥ attempt deadline`, with nominal S = 40 ms (service time of one request, not 1/μ; underestimates the 80 ms during the slowdown, stated as a limitation). The gateway only drops already-expired requests. Not only "drop if already expired". The expired-only variant stayed stuck in the prototype with the realistic client (see `10-prototype-findings.md`); optionally report it as a comparison.
@@ -36,12 +36,14 @@ Share protocol and data formats between simulator and testbed, but implement mec
 - **Bounded queue note:** a limit above μT stays stuck; a limit below μT acts as load shedding.
 
 ## Mechanisms ✅
-| Mechanism | Side | Where |
-|---|---|---|
-| Retry budget | Client | Load generator |
-| Circuit breaker | Client (caller of backend) | Gateway; rejects when open, no failover |
-| Deadline drop | Server | Gateway and backend |
-| Load shedding | Server | Gateway |
+| Mechanism | Side | Where | Scope |
+|---|---|---|---|
+| Retry budget | Client | Load generator; b = 20%, C = 10 | **Core** |
+| Deadline drop | Server | Backend (can't finish in time); gateway drops expired only | **Core** |
+| Circuit breaker | Client (caller of backend) | Gateway; rejects when open, no failover | Phase 2 |
+| Load shedding | Server | **Backend admission**: reject on arrival if N ≥ L. Counts the actual outstanding work; a gateway counter would miss requests the gateway already gave up on but the backend still holds (main implementation risk, Prof. feedback 2026-11-27) | Phase 2 |
+
+Phase 2 runs only after a go at the end of week 4 (see `06-schedule.md`).
 
 ## Logging
 General ✅: per-attempt rows only at the client, kept in memory and written after the run; servers only counters + queue length sampled once per second; no per-request print/logging/file writes; overhead measured once (target < 1 to 2%). Simulator writes the same files and fields.

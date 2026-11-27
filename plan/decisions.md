@@ -25,3 +25,9 @@
 | 2026-11-27 | Deadlines per attempt; goodput by per-attempt deadline (primary), request latency first send → success (secondary); recovery judged on B's goodput |
 | 2026-11-27 | Log client attempts per backend and gateway forwarded per backend separately; offered work = forwarded to B |
 | 2026-11-27 | Simplified to **one backend** (was A healthy + B slowed). With key routing and no failover A never interacts with B; breaker cost for partial traffic and shared-budget dilution (b/s) derived analytically. Supersedes the per-backend / s_B entries above; retry budget rule back to b < 1/ρ − 1 |
+| 2026-11-27 | Prof. feedback: core = 2 mechanisms (retry budget, deadline drop) + their pair, 6 configurations; circuit breaker and load shedding = phase 2 if time |
+| 2026-11-27 | Phase 2 go/no-go at end of week 4; phase 2 parameters fixed at the go decision |
+| 2026-11-27 | Load shedding (phase 2) as backend admission on N (actual outstanding work), not a gateway counter |
+| 2026-11-27 | Retry budget: b = 20%, bucket capacity C = 10 tokens, starts full |
+| 2026-11-27 | Model predictions presented as approximations under explicit assumptions A1–A6 |
+| 2026-11-27 | Optional work demoted to "only if time": testbed CPU robustness check, testbed guide check, 4th testbed scenario |
