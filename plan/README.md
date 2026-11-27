@@ -20,6 +20,7 @@ Single source of truth for planning the bachelor thesis. Everything decided so f
 | `08-literature.md` | Verified sources and what still needs checking |
 | `09-open-items.md` | Open decisions and to-dos |
 | `10-prototype-findings.md` | Results of the feasibility prototype (pointers, not thesis evidence) |
+| `11-implementation-plan.md` | Step-by-step implementation order for the core (🟡) |
 | `decisions.md` | Log of confirmed decisions with dates |
 
 ## Status markers

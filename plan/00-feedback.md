@@ -15,7 +15,7 @@
 | 2 | ✅ 2026-11-27 | `04` phase-dependent threshold N* = μT, D* as upper bound + t_r, drop rule with S; `01` goodput + request latency; `02` deadline drop, protocol |
 | 3 | ✅ 2026-11-27 | Core cut to 2 mechanisms (Prof.); optional items demoted to "only if time"; new cut order in `03`, `06` |
 | 4 | open | |
-| 5 | 🟡 partly | Done: b = 20%, C = 10; breaker/shedding parameters fixed at phase 2 go. Open: start date, testbed hardware |
+| 5 | 🟡 partly | Done: b = 20%, C = 10; breaker/shedding parameters fixed at phase 2 go. Testbed hardware: old laptop with Fedora. Open: start date |
 
 ## Prof. feedback (2026-11-27)
 | Point | Answer | Where |

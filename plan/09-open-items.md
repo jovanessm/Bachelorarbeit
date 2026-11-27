@@ -2,14 +2,15 @@
 
 ## Decisions ❓
 - Map the 8-week plan onto official dates (start/registration date).
-- Testbed hardware: old laptop with Ubuntu vs. cheap cloud VM (check the laptop first).
 - Workers and service time of the backend (proposal 4 × 40 ms, already used throughout the plan).
-- Testbed transport: plain asyncio TCP (toolstack) vs. aiohttp.
+- Testbed transport: plain asyncio TCP (toolstack) vs. aiohttp. Proposal 🟡: plain TCP, JSON lines, a few persistent multiplexed connections per hop (see `02`).
 - Thresholds in H2, H4, H5 and the agreement criterion (🟡 proposals in `01`), including "large backlog" N ≥ 3 × μT. Fix before the main runs.
 - Loads for testbed healthy-state runs (proposal 60% and 90%).
 - Phase 2 only (fix at the go decision, end of week 4): breaker threshold and open time; shedding limit L (+ sweep for H3).
 
 ## Decided ✅ (details in `decisions.md` and the linked files)
+- Testbed machine: old laptop with Fedora (`03`).
+- Timeouts are decided by the client only; the gateway stops waiting at the attempt deadline and sends no timeout response (`02`).
 - Core: retry budget + deadline drop; circuit breaker and load shedding = phase 2 (`03`, `06`).
 - Retry budget: b = 20%, C = 10 tokens, starts full (`02`).
 - Healthy-state runs per configuration, no trigger, 1% random errors, so the cost of the retry budget (and in phase 2 of the breaker) becomes visible (`03`).
@@ -24,7 +25,7 @@
 - [ ] Read `thesis/org/empfehlungen_zu_abschlussarbeiten.pdf` and `anleitung_expose.pdf` (page count, required structure).
 - [ ] Confirm with Alte Leipziger that a company-independent topic is fine.
 - [ ] 1–2 day spike on the Mac before registering (also the first check of the single-backend design outside the prototype).
-- [ ] Check old laptop (CPU, cores, RAM, disk; Ubuntu live USB; timer test).
+- [ ] Check old laptop (CPU, cores, RAM, disk, timer test). Fedora installed ✅.
 - [ ] Verify remaining references (`08-literature.md`).
 - [ ] Optional: check ResilienceBench-Operator.
 

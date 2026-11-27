@@ -48,7 +48,7 @@ One scenario per mechanism where it should clearly work; part of mechanism verif
 | Circuit breaker (phase 2) | Backend fails hard (errors) | Opens, fails fast, probe closes it later |
 
 ## Machine and protocol ✅
-- Main testbed batch on one **dedicated Linux machine** (old laptop with Ubuntu, else cheap cloud VM). Develop and pilot on the Mac.
+- Main testbed batch on one **dedicated Linux machine** (old laptop with Fedora ✅ 2026-11-27). Develop and pilot on the Mac.
 - All compared runs on the same machine; calibrate on that machine; report specs.
 - Runs strictly sequential; **randomized order**; automatic flagging (host CPU, generator lag, idle latency) and rerun of flagged runs.
 

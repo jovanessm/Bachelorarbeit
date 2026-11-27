@@ -38,3 +38,5 @@
 | 2026-11-27 | Budget condition: given B > μT, iff in the fluid model (corrects the "sufficient, not necessary" wording); prediction in the real system |
 | 2026-11-27 | H5: main benefit = less wasted work and fewer attempts; TTR ratio only where deadline drop alone takes > 5 s (avoids floor effect) |
 | 2026-11-27 | Agreement criterion: scenario B compared by share of non-recovering runs (±30 pp), A and C by majority class |
+| 2026-11-27 | Testbed machine: old laptop with Fedora (was Ubuntu or cloud VM) |
+| 2026-11-27 | Timeouts decided by the client only; gateway stops waiting at the attempt deadline, no timeout response, late backend responses discarded and counted |
