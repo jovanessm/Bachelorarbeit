@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Raw experiment data (archived separately at the end)
+data/*
+!data/.gitkeep

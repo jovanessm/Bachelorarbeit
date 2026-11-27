@@ -22,10 +22,10 @@ experiment/
 └── data/         # gitignored
 ```
 
-## Step 0: Repo setup (½ day)
-- [ ] `uv init` in `experiment/`, Python 3.12, deps: pydantic, pyyaml, pandas, numpy, scipy, matplotlib, pytest.
-- [ ] Folder layout above, `.gitignore` for `data/`.
-- [ ] One dummy test passes with `uv run pytest`.
+## Step 0: Repo setup (½ day) ✅ 2026-11-27
+- [x] uv project in `experiment/`, Python 3.12, deps: pydantic, pyyaml, pandas, numpy, scipy, matplotlib, pytest (dev group).
+- [x] Folder layout above, `.gitignore` for `data/`.
+- [x] One dummy test passes with `uv run pytest`.
 
 **Done when:** a fresh clone runs `uv sync && uv run pytest` without errors.
 
