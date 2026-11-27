@@ -33,4 +33,8 @@
 | `09` outdated | Split into open decisions and decided items; estimates updated |
 | Healthy-state runs per mitigation configuration | Added: separate no-trigger runs for each configuration (sim 4 × 5 loads × 10 seeds; testbed 4 × 2 loads × 5 reps) |
 | Single-backend design unverified, prototype is simulation only | Stated in `02`, `06`, `10`; week-2 checkpoint is the first real check |
-| H5 contradicted the prototype (deadline drop alone recovers) | Rewritten: pair faster + less wasted work; budget alone fails at 90% |
+| H5 contradicted the prototype (deadline drop alone recovers) | Rewritten: pair faster + less wasted work; budget alone fails at 90% || Budget inequality is sufficient, not necessary; 90% failure not guaranteed | `04` and H5: "predicted to fail, tested not assumed" |
+| RQ3 still reflected old H5 | RQ3 now covers recovery, time to recovery, wasted work |
+| Response time needs minimum S; D* applicable region | `04`: t_resp ≈ max(S, N/μ); D* only for 1/k < ρ < 1 |
+| Quantify H2, H4, H5; define 80% criterion | `01`: thresholds 🟡, criterion on 15 cells, majority class, ties = disagreement |
+

@@ -37,8 +37,8 @@ The comparison with the simulator measures how much these assumptions matter. Kn
 Fresh arrival rate:
 $$\lambda = \rho\,\mu$$
 
-Response time of an arriving request (since c/μ = S):
-$$t_{\text{resp}} \approx \frac{N - c}{\mu} + S = \frac{N}{\mu}$$
+Response time of an arriving request (no waiting while N < c; otherwise c/μ = S):
+$$t_{\text{resp}} \approx \max\left(S,\ \frac{N - c}{\mu} + S\right) = \max\left(S,\ \frac{N}{\mu}\right)$$
 
 Threshold (requests in system), always with the capacity of the current phase:
 $$N^{*} = \mu T \;(\text{normal: } 100), \qquad N^{*}_{\text{slow}} = \frac{\mu}{k}\,T \;(\text{slowdown: } 50)$$
@@ -46,9 +46,11 @@ Counting only waiting requests (Q = N − c) gives μT − c = 96 and μT/k − 
 
 Backlog at the end of the slowdown:
 $$B = \left(\lambda - \frac{\mu}{k}\right) D$$
+Starting from an almost empty system (≈ ρc in service, ignored); valid for ρ > 1/k, otherwise B ≈ 0.
 
 Critical slowdown duration (≈ under A1–A3; an upper bound because of A3):
 $$D^{*} = \frac{\mu T}{\lambda - \mu/k} = \frac{T}{\rho - 1/k}$$
+Applies only for 1/k < ρ < 1. For ρ ≤ 1/k no backlog builds during the slowdown (D* = ∞: the trigger alone never overloads); for ρ ≥ 1 the backend is overloaded without any trigger. The same region applies to t_s and t_r.
 
 From when retries during the slowdown add load (first timeouts at t_s, their retries arrive about T later):
 $$t_r \approx t_s + T, \qquad t_s = \frac{\mu T/k}{\lambda - \mu/k} = \frac{T}{k\rho - 1}$$
@@ -68,7 +70,7 @@ $$t_{\text{no-retry}} = \frac{B - \mu T}{\mu - \lambda}$$
 
 Retry budget (one token bucket in the generator; ≈ under A1, A5):
 $$\lambda\,(1+b) < \mu \iff b < \frac{1}{\rho} - 1$$
-Not a strict bound for every run. Initial tokens and bucket capacity only change the transient: a full bucket at the trigger allows a burst of up to C extra retries. Keep C small (C = 10 tokens ✅) so the burst stays below ~10% of μT.
+Given B > μT (stuck at the end of the slowdown), every attempt times out, so retries use the whole budget and the attempt rate is λ(1 + b). In the fluid model the backlog then drains **if and only if** λ(1 + b) < μ. In the real system this is a prediction, not a guarantee, especially near the boundary (90% load: λ(1 + b) = 108 vs. μ = 100 req/s), where randomness, transients and timing can change the outcome. Initial tokens and bucket capacity only change the transient: a full bucket at the trigger allows a burst of up to C extra retries. Keep C small (C = 10 tokens ✅) so the burst stays below ~10% of μT.
 
 Drain time with retry budget:
 $$t_{\text{budget}} = \frac{B - \mu T}{\mu - \lambda\,(1 + b)}$$
@@ -110,10 +112,10 @@ Vulnerable zone: λ < μ < λ(1 + R). Induction on P(t): N(t) > μT shows the st
   | 0.8 | 2.7 s | 3.3 s |
   | 0.9 | 2.25 s | 2.5 s |
 
-  ρ ≤ 0.5 → never (trigger alone does not overload). t_r < D* at every load, so the real boundary lies somewhat below D*.
+  ρ ≤ 1/k = 0.5 → never (outside the applicable region 1/k < ρ < 1). t_r < D* at every load, so the real boundary lies somewhat below D*.
 - Drain time without retries: backlog B = (λ − μ/k)·D; time until N < μT is (B − μT) / (μ − λ).
   Prototype check: B = 600, (600 − 100)/20 = **25 s** predicted vs. **24–33 s** simulated.
-- Retry budget rule ✅: recovers only if b < 1/ρ − 1 (80% load → b < 25%; 90% → b < ~11%). Chosen b = 20% ✅ → recovers below ρ ≈ 0.83, fails at 90% (gives H5 its test cell); b = 10% would recover in the whole grid. Drain time (B − μT) / (μ − λ(1 + b)).
+- Retry budget rule ✅: given B > μT, recovery in the fluid model iff b < 1/ρ − 1 (80% load → b < 25%; 90% → b < ~11%). Chosen b = 20% ✅ → drainage expected below ρ ≈ 0.83; at 90% the model predicts non-recovery, but close to the boundary, so it is tested, not assumed (gives H5 its test cell); b = 10% would satisfy the condition in the whole grid. Drain time (B − μT) / (μ − λ(1 + b)).
 - Outputs of the model: stuck/recovers (binary) plus quantities: threshold, D*, backlog, attempt rate when stuck, drain/recovery time, parameter limits.
 - Prototype comparison ✅: direction right everywhere checked; model is consistently slightly optimistic (tips a bit earlier, recovers a bit slower than predicted), likely because retries during the slowdown (from t_r on, before D* at every load) and randomness are ignored. Backoff is ignored on purpose (changes timing, not the steady-state attempt rate).
 - Predictions are approximations under A1–A6, computed for every grid cell by a script and fixed before the main runs. Shown as: boundary heatmap with D* line, agreement table (model vs. observed outcome), predicted vs. observed time-to-recovery scatter.

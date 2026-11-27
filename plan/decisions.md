@@ -32,3 +32,9 @@
 | 2026-11-27 | Model predictions presented as approximations under explicit assumptions A1–A6 |
 | 2026-11-27 | Optional work demoted to "only if time": testbed CPU robustness check, testbed guide check, 4th testbed scenario |
 | 2026-11-27 | H5 rewritten: pair recovers faster with less wasted work than either alone; budget alone fails at 90% load, deadline drop alone recovers more slowly (old "neither recovers alone" contradicted the prototype) |
+| 2026-11-27 | RQ3 reworded: combination benefit = recovers, time to recovery, wasted work (matches new H5) |
+| 2026-11-27 | Model: retry-budget inequality stated as sufficient (fluid-model drainage), not necessary; t_resp ≥ S; D* only for 1/k < ρ < 1 |
+| 2026-11-27 | H2, H4, H5 quantified and agreement criterion defined (cells, majority class, 3 classes, ties = disagreement); thresholds 🟡 until confirmed |
+| 2026-11-27 | Budget condition: given B > μT, iff in the fluid model (corrects the "sufficient, not necessary" wording); prediction in the real system |
+| 2026-11-27 | H5: main benefit = less wasted work and fewer attempts; TTR ratio only where deadline drop alone takes > 5 s (avoids floor effect) |
+| 2026-11-27 | Agreement criterion: scenario B compared by share of non-recovering runs (±30 pp), A and C by majority class |

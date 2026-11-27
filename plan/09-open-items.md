@@ -5,7 +5,7 @@
 - Testbed hardware: old laptop with Ubuntu vs. cheap cloud VM (check the laptop first).
 - Workers and service time of the backend (proposal 4 × 40 ms, already used throughout the plan).
 - Testbed transport: plain asyncio TCP (toolstack) vs. aiohttp.
-- Threshold for "large backlog" in H2 (proposal: N ≥ 3 × μT at end of slowdown).
+- Thresholds in H2, H4, H5 and the agreement criterion (🟡 proposals in `01`), including "large backlog" N ≥ 3 × μT. Fix before the main runs.
 - Loads for testbed healthy-state runs (proposal 60% and 90%).
 - Phase 2 only (fix at the go decision, end of week 4): breaker threshold and open time; shedding limit L (+ sweep for H3).
 
