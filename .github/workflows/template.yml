@@ -1,14 +1,24 @@
-on: [push, pull_request]
+on:
+  push:
+    paths: ['thesis/**', '.github/workflows/template.yml']
+  pull_request:
+    paths: ['thesis/**', '.github/workflows/template.yml']
 
 name: template
 
 jobs:
   test-latex-template:
     runs-on: ubuntu-22.04
-    name: Test LaTeX Template 
-    steps: 
-      - uses: actions/checkout@v2
+    name: Test LaTeX Template
+    steps:
+      - uses: actions/checkout@v4
       - name: Build
         run: |
           docker pull mbredel/thesis-template:latest
-          docker run --rm --volume $(pwd):/thesis-template/ --workdir /thesis-template mbredel/thesis-template:latest
+          docker run --rm --volume "$(pwd)/thesis":/thesis-template/ --workdir /thesis-template mbredel/thesis-template:latest
+      - name: Upload PDF
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thesis-pdf
+          path: thesis/thesis.pdf
