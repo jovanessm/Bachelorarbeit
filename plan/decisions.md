@@ -31,3 +31,4 @@
 | 2026-11-27 | Retry budget: b = 20%, bucket capacity C = 10 tokens, starts full |
 | 2026-11-27 | Model predictions presented as approximations under explicit assumptions A1–A6 |
 | 2026-11-27 | Optional work demoted to "only if time": testbed CPU robustness check, testbed guide check, 4th testbed scenario |
+| 2026-11-27 | H5 rewritten: pair recovers faster with less wasted work than either alone; budget alone fails at 90% load, deadline drop alone recovers more slowly (old "neither recovers alone" contradicted the prototype) |

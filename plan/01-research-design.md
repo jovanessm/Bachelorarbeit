@@ -12,7 +12,7 @@
 | H2 | After a large stale backlog has formed (TODO: define large stale backlog: e.g. N ≥ 3 × μT at the end of the slowdown ❓), retry budget alone recovers more slowly than deadline drop alone. | RQ2 |
 | H3 (phase 2 only) | Load shedding restores recovery only if its queue limit is at most about μT; with a higher limit the system stays stuck. The circuit breaker restores recovery, but fails all requests to the slowed backend while open, so its time to recovery grows with the open time. (Rewritten 2026-11-23 after prototype, see `10-prototype-findings.md`.) | RQ2 |
 | H4 | In normal operation (incl. 1% random errors), retry budget and deadline drop cost almost nothing: goodput and p99 request latency within a few % of the baseline. Phase 2 adds: load shedding rejects a measurable share at the higher load; circuit breaker false trips. | RQ2 |
-| H5 | Retry budget + deadline drop recovers at high load with long slowdowns, where neither mechanism recovers alone, while at low load with short slowdowns a single mechanism is enough. | RQ3 |
+| H5 | At high load with long slowdowns, retry budget + deadline drop recovers faster and with less wasted work than either mechanism alone; the retry budget alone fails at 90% load (b = 20% > 1/ρ − 1), deadline drop alone recovers but more slowly. At low load with short slowdowns, a single mechanism is enough (no measurable gain from the pair). (Rewritten 2026-11-27: in the prototype deadline drop alone already recovered, so "neither recovers alone" would fail in every cell.) | RQ3 |
 | Criterion | Simulator and testbed agree on the outcome class in ≥ 80% of validation scenarios. | Methods |
 
 ## Definitions ✅
@@ -27,7 +27,7 @@
 | Retry amplification | Total attempts ÷ original requests |
 | Request latency | First send of the original request to its successful response, across retries (max ≈ 4.7 s). Secondary metric, p50/p99. Not end-to-end deadline compliance |
 | Request failure rate | Share of original requests that fail after all retries |
-| Offered work | Attempts forwarded to the backend by the gateway per second (client attempts minus breaker rejections, shedding, gateway drops) |
+| Offered work | Attempts forwarded to the backend by the gateway per second (client attempts minus breaker rejections and gateway drops; requests shed at the backend count as offered but cost almost nothing) |
 | Wasted work | Share of server processing spent on already-expired requests |
 | Recovery boundary | Longest slowdown in the grid after which the chain still recovers |
 | Healthy-state cost | Goodput, p99 request latency, rejection rate without trigger |
@@ -47,7 +47,7 @@ Report results in **relative units** (ρ, slowdown duration as multiple of timeo
 Metastability is defined by the sustaining loop, not by a time limit. Finite runs show consistency with metastability, not proof.
 
 ## Controls ✅
-- **No-trigger control:** healthy-state cost.
+- **Healthy-state runs (no trigger):** baseline and every mitigation configuration separately, with 1% random errors; measure healthy-state cost (H4).
 - **No-retry control:** same system and trigger, retries off. Must recover; proves retries sustain the failure. Not a proposed fix.
 
 ## Mechanism verification ✅

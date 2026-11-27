@@ -21,7 +21,7 @@
 |---|---|---|
 | 0 (before start) | 1–2 day spike on the Mac: minimal testbed shows stuck baseline + recovering no-retry control ✅ | Go for topic |
 | 1 | Literature check, frozen definitions/parameters, simulator baseline + controls, minimal testbed | Research protocol, outline |
-| 2 | Open-loop generator, testbed baseline, day-1 checks (pool limits, ulimit, stale work, hidden queue limits) | **Checkpoint:** both environments show stuck baseline + recovering no-retry control |
+| 2 | Open-loop generator, testbed baseline, day-1 checks (pool limits, ulimit, stale work, hidden queue limits) | **Checkpoint:** both environments show stuck baseline + recovering no-retry control (first real check of the single-backend design; prototype evidence is simulation only) |
 | 3 | Core mechanisms (retry budget, deadline drop) in simulator, unit tests, positive controls; analytical model | Simulator ready |
 | 4 | Core mechanisms in testbed, telemetry, calibration | Testbed ready; **go/no-go for phase 2** |
 | 5 | Core simulator grid + testbed runs (nights); if go: breaker + shedding in simulator | Raw dataset |
@@ -40,4 +40,4 @@ Go only if: the week-2 checkpoint passed, both core mechanisms pass their positi
 Narrower study of post-overload recovery speed, stating clearly that metastability was not demonstrated.
 - Title: *Evaluating Client-Side and Server-Side Mitigations for Retry-Amplified Overload Recovery: A Simulation and Testbed Study*
 - RQs: (1) how load and slowdown duration affect time to recovery; (2) how mechanisms alone and in pairs affect recovery time, wasted work, goodput; (3) how well the simulator reproduces the testbed and which testbed properties explain differences.
-- H6 becomes rank agreement (Spearman ρ ≥ 0.8), fixed before the runs.
+- The validation criterion becomes rank agreement (Spearman ρ ≥ 0.8), fixed before the runs.

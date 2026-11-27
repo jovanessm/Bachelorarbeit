@@ -15,7 +15,8 @@ Practitioners know several countermeasures, but nobody says **which one to use w
 - Own implementation, measurable results, not a pure literature review, durable topic (no dependency on languages, frameworks or AI models).
 - Hardware: MacBook (development), dedicated Linux machine for main testbed runs (old laptop, to be checked).
 
-## Status (2026-11-23)
-- Exposé v1 sent, feedback received (see `09-open-items.md` for how each point is answered).
+## Status (2026-11-27)
+- Exposé v2 sent; second feedback round answered (see `00-feedback.md`).
+- Design simplified to one backend; core cut to 2 mechanisms (retry budget, deadline drop), circuit breaker and load shedding as phase 2.
 - Simulator feasibility prototype exists (not thesis code): baseline gets stuck, no-retry control recovers.
-- Exposés in Claude Docs are not yet updated to the new framing.
+- Exposé v3 due 29.11.2026.

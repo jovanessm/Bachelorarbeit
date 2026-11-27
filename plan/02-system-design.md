@@ -4,7 +4,7 @@
 ```
 load generator (client) ──► gateway ──► backend  (gets the slowdown trigger)
 ```
-- **One backend ✅ (2026-11-27)**, one container configured by env vars. Simplified from two backends (A healthy, B slowed): with key routing and no failover, A never interacted with B, so it added complexity and testbed load without new results. Multi-backend effects (breaker cost for partial traffic, shared-budget dilution) are derived analytically in `04`. **No failover**: an open breaker rejects requests.
+- **One backend ✅ (2026-11-27)**, one container configured by env vars. Simplified from two backends (A healthy, B slowed): with key routing and no failover, A never interacted with B, so it added complexity and testbed load without new results. Multi-backend effects (breaker cost for partial traffic, shared-budget dilution) → discussion / future work. Not yet verified on the testbed: the week-2 checkpoint is the first real check (prototype evidence is simulation only). **No failover**: an open breaker rejects requests.
 - Simulator models the same parts as modules. Both read the **same scenario files** and write the **same CSV format**.
 
 ## Components (11)
@@ -25,7 +25,7 @@ load generator (client) ──► gateway ──► backend  (gets the slowdown 
 Share protocol and data formats between simulator and testbed, but implement mechanisms separately in each (keeps them independent for verification) ✅.
 
 ## Key design choices
-- **Service time ✅:** `asyncio.sleep` inside a fixed number of workers (capacity = workers ÷ service time, e.g. 4 ÷ 40 ms = 100 req/s). Plus 2 to 3 CPU-work runs as robustness check. (Unlike ResilienceBench, where injected delays use no server capacity.)
+- **Service time ✅:** `asyncio.sleep` inside a fixed number of workers (capacity = workers ÷ service time, e.g. 4 ÷ 40 ms = 100 req/s). CPU-work robustness check only if time (see `03`). (Unlike ResilienceBench, where injected delays use no server capacity.)
 - **Load ✅:** Poisson arrivals, open-loop (generator never waits for responses). Log intended vs. actual send rate.
 - **Retries ✅:** only the client retries. R = 3 (4 attempts total); retry on timeouts and on error/rejection responses; exponential backoff 100 / 200 / 400 ms with full jitter (random wait in [0, backoff]); T = 1 s per attempt, fresh deadline per retry (no end-to-end deadline; total request latency is reported as a secondary metric). Backoff is part of the realistic client baseline, not a fifth mitigation: it delays retries but does not reduce them, so the stuck state is still possible. Use this client from the spike and week-2 checkpoint on. Runner waits a ~5 s grace period at the end of each run.
 - **Retry budget ✅:** one token bucket in the generator: each original request adds b = 0.2 tokens, each retry costs 1 token, capacity C = 10, starts full (2026-11-27).
@@ -51,11 +51,11 @@ General ✅: per-attempt rows only at the client, kept in memory and written aft
 Fields ✅:
 - **Client, per attempt:** run_id, request_id, attempt (0 = first), send_ts, deadline_ts, end_ts, outcome (`ok` / `timeout` / `rejected_shed` / `rejected_breaker` / `error`), latency_ms.
 - **Client, per second:** intended vs. actual send rate, attempts (original / retry), retries scheduled, retries denied by budget, budget tokens, requests in flight.
-- **Gateway, per second:** received, forwarded, shed, breaker rejections, dropped as expired (each split original / retry by attempt number), breaker state (+ each state change with timestamp), in flight.
-- **Backend, per second:** queue length, arrivals, completed, completed after deadline, dropped by deadline drop, busy workers, time spent on expired work, trigger on/off.
+- **Gateway, per second:** received, forwarded, breaker rejections, dropped as expired (each split original / retry by attempt number), breaker state (+ each state change with timestamp), in flight.
+- **Backend, per second:** queue length, arrivals, completed, completed after deadline, dropped by deadline drop, shed (phase 2), busy workers, time spent on expired work, trigger on/off.
 - **Run metadata:** scenario, configuration, seed, machine, calibration version, Git commit. **Host, per second:** CPU, memory, open file descriptors.
 
-Metric sources: goodput and amplification and healthy-state cost from client rows; request latency from client rows (first send_ts per request_id); offered work from gateway forwarded counts (this, not client attempts, is the work offered to the backend); attempts/s from client per-second log; queue and trend from the backend (gateway in-flight separately); wasted work from the backend; mechanism telemetry from client (budget), gateway (breaker, shedding), backend (deadline drop); run flagging from generator lag and host metrics.
+Metric sources: goodput and amplification and healthy-state cost from client rows; request latency from client rows (first send_ts per request_id); offered work from gateway forwarded counts (this, not client attempts, is the work offered to the backend); attempts/s from client per-second log; queue and trend from the backend (gateway in-flight separately); wasted work from the backend; mechanism telemetry from client (budget), gateway (breaker), backend (deadline drop, shedding); run flagging from generator lag and host metrics.
 
 ## Calibration ✅
 Separate script on the same testbed, no trigger, no retries, load ramp. Measures capacity μ, service-time spread, logging overhead, generator check, queue/OS limits → `calibration.json`, used by scenario generator (`rate = ρ × μ`) and simulator. Rerun per machine and after changes affecting capacity.

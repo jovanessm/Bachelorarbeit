@@ -27,7 +27,7 @@ Bachelorarbeit/
 │   ├── scenarios/
 │   ├── runner/    # runner, calibrate.py, setup script
 │   ├── analysis/
-│   └── tests/
+│   ├── tests/
 │   └── data/      # raw CSVs, gitignored; archive at the end
 └── thesis/        # H-Da LaTeX template; figures from analysis
 ```

@@ -8,13 +8,14 @@ Single source of truth for planning the bachelor thesis. Everything decided so f
 
 | File | Content |
 |---|---|
+| `00-feedback.md` | Feedback rounds and where each point is answered |
 | `00-overview.md` | Topic, title, framing, constraints, current status |
 | `01-research-design.md` | Research questions, hypotheses, definitions, outcome classes, controls |
 | `02-system-design.md` | Components, testbed and simulator design, mechanisms, logging, calibration |
 | `03-experiments.md` | Configurations, grid, run counts, run time, machine, data reduction, guide validation |
 | `04-analytical-model.md` | Retry loop analysis and simple fluid model |
 | `05-tooling-and-repo.md` | Toolstack, repository layout, ResilienceBench findings |
-| `06-schedule.md` | Official dates, 8-week plan, checkpoint, cut order, fallback |
+| `06-schedule.md` | Official dates, 8-week plan, checkpoint, phase 2 go/no-go, cut order, fallback |
 | `07-thesis-outline.md` | Chapter structure and page estimates |
 | `08-literature.md` | Verified sources and what still needs checking |
 | `09-open-items.md` | Open decisions and to-dos |

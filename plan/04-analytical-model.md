@@ -1,7 +1,7 @@
 # Analytical model ✅ (own chapter, ~3–4 pages)
 
 ## Scope ✅ (2026-11-27)
-One backend behind the gateway; it gets the slowdown. An open circuit breaker rejects requests (no failover). All rates are per backend. Extension to several backends: see the last section. Core mechanisms: retry budget, deadline drop; circuit breaker and load shedding are phase 2.
+One backend behind the gateway; it gets the slowdown. An open circuit breaker rejects requests (no failover). All rates are per backend. Core mechanisms: retry budget, deadline drop; circuit breaker and load shedding are phase 2.
 
 ## Assumptions ✅ (all predictions are approximations under these)
 | # | Assumption | Used by |

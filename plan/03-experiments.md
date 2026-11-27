@@ -1,23 +1,27 @@
 # Experiments
 
 ## Configurations ✅
-**Core ✅ (2026-11-27, Prof. feedback): 6 configurations**: unprotected baseline, retry budget, deadline drop, retry budget + deadline drop, plus 2 controls (no trigger, no retry).
-**Phase 2 (only after go at end of week 4):** + circuit breaker, load shedding and their pairs (budget + shedding, breaker + deadline drop, breaker + shedding) = 5 configurations. Same-side pairs are not tested.
+**Core ✅ (2026-11-27, Prof. feedback): 4 configurations**: unprotected baseline, retry budget, deadline drop, retry budget + deadline drop.
+- **Trigger grid:** the 4 configurations + no-retry control.
+- **Healthy-state runs (no trigger, 1% random errors):** each of the 4 configurations separately, per load (H4). Slowdown duration does not apply.
+**Phase 2 (only after go at end of week 4):** + circuit breaker, load shedding and their pairs (budget + shedding, breaker + deadline drop, breaker + shedding) = 5 configurations, each in the trigger grid and in healthy-state runs. Same-side pairs are not tested.
 
 ## Grid and run counts (estimates, core)
 | Part | Runs | Time |
 |---|---|---|
-| Simulator main grid ✅: 6 configurations × 5 loads (50, 60, 70, 80, 90%) × 6 slowdown durations (1, 2, 5, 10, 20, 40 s) × 10 seeds, k = 2 | 1,800 | < 30 min parallel |
+| Simulator trigger grid ✅: 5 (4 configurations + no-retry control) × 5 loads (50, 60, 70, 80, 90%) × 6 slowdown durations (1, 2, 5, 10, 20, 40 s) × 10 seeds, k = 2 | 1,500 | < 30 min parallel |
+| Simulator healthy-state: 4 configurations × 5 loads × 10 seeds, no trigger | 200 | minutes |
 | Simulator extended 10 min runs (only runs not recovered within 120 s) | ~500 | ~15 min |
 | Simulator guide check | ~20 | minutes |
 | Positive controls (simulator + testbed, before main runs): 2 mechanisms × 3 reps, plus nominal vs. true S check (~10 seeds) | ~20 | minutes / ~30 min |
 | Testbed calibration | | 1–2 h |
-| Testbed main: 6 × 3 scenarios (mild, boundary, severe) × 5 reps | 90 | ~5.3 h (~3.5 min/run) |
+| Testbed trigger runs: 5 × 3 scenarios (mild, boundary, severe) × 5 reps | 75 | ~4.4 h (~3.5 min/run) |
+| Testbed healthy-state: 4 configurations × 2 loads (60%, 90% 🟡) × 5 reps, no trigger | 40 | ~2 h (~3 min/run) |
 | Testbed extended runs | ~6 | ~1 h |
 
-Total core ≈ 8–9 h machine time, 1–2 nights. Plan one full rerun.
+Total core ≈ 9–10 h machine time, 2 nights. Plan one full rerun.
 
-**Phase 2 (after go):** simulator same grid, 1,500 runs (< 30 min), plus shedding-limit sweep for H3 (L ∈ {0.5, 1, 2, 5}·μT, 2 scenarios × 10 seeds = 80 runs). Testbed only if week 6 leaves time: 5 × 3 scenarios × 3 reps = 45 runs, ~2.6 h.
+**Phase 2 (after go):** simulator same grid, 1,500 trigger + 250 healthy-state runs (< 30 min), plus shedding-limit sweep for H3 (L ∈ {0.5, 1, 2, 5}·μT, 2 scenarios × 10 seeds = 80 runs). Testbed only if week 6 leaves time: 5 × 3 scenarios × 3 reps = 45 trigger runs (~2.6 h) + 5 × 2 loads × 3 reps = 30 healthy-state runs (~1.5 h).
 
 **Only if time (after the guide is built):** testbed CPU robustness check (~18 runs + own calibration; otherwise a stated threat to validity), testbed guide check (~20 runs), optional 4th testbed scenario.
 
@@ -31,8 +35,8 @@ The 3 testbed scenarios are taken from the **simulator's map of the unprotected 
 |---|---|---|---|
 | A: mild | All baseline seeds recover, middle load | 60% load, 2 s | H5 (single mechanism enough), no false alarms |
 | B: boundary | ~30–70% of baseline seeds stuck | 70% load, 5 s | Where the guide's recommendations change |
-| C: severe | All baseline seeds stuck, N ≥ 3 × μT at end of slowdown | 80% load, 20 s | H2, H3, H5 |
-All 6 core configurations run in each scenario (phase 2 configurations only if time). Optional 4th scenario near a single mechanism's boundary: candidate for the guide check.
+| C: severe | All baseline seeds stuck, N ≥ 3 × μT at end of slowdown | 80% load, 20 s | H2, H5 (H3 in phase 2) |
+The 4 core configurations and the no-retry control run in each scenario (phase 2 configurations only if time). Optional 4th scenario near a single mechanism's boundary: candidate for the guide check.
 
 ## Positive controls ✅
 One scenario per mechanism where it should clearly work; part of mechanism verification, not of the main runs (weeks 3–4, double as pilot runs):
@@ -54,7 +58,7 @@ per request → per second → **per run summary** → **per cell** (config × l
 ## Decision guide ✅
 - Built from the per-cell results. Inputs: load level, expected trigger length, which side you control, accepted healthy-state cost.
 - Mark uncertain zones where simulator and testbed disagree.
-- **Validated** on 2 to 3 new scenarios not used to build it.
+- **Validated** on 2 to 3 new scenarios not used to build it, in the simulator (testbed guide check only if time).
 
 ## Comparisons at the end ✅
 **1. Mitigations against each other (main results, RQ1–RQ3).** Mostly from the simulator across the whole grid, confirmed by the testbed at the 3 scenarios. Feeds the decision guide.
@@ -63,7 +67,7 @@ per request → per second → **per run summary** → **per cell** (config × l
 | Baseline vs. no-retry control | Stuck vs. recovered: retries cause the failure (RQ1, H1) |
 | Baseline across load × slowdown | Recovery boundary (RQ1) |
 | The single mitigations (2 core, +2 in phase 2) | Outcome, time to recovery, retry amplification, wasted work (RQ2, H2, H3) |
-| Mitigations in normal operation | Goodput, p99 request latency, rejection rate = healthy-state cost (H4) |
+| Mitigations in normal operation (healthy-state runs, per configuration) | Goodput, p99 request latency, rejection rate = healthy-state cost (H4) |
 | Pairs vs. their single mitigations | Outcome, time to recovery (RQ3, H5) |
 
 **2. Model, simulator and testbed against each other (validation).** Shows the answers can be trusted.
@@ -77,7 +81,7 @@ per request → per second → **per run summary** → **per cell** (config × l
 | Quantity | Model | Simulator | Testbed |
 |---|---|---|---|
 | Stuck or recovers | ✅ | ✅ | ✅ |
-| Recovery boundary (D*) | ✅ exact formula | ✅ all grid cells | ⚠️ only at 3 scenarios |
+| Recovery boundary (D*) | ⚠️ approximate (A1–A6, upper bound) | ✅ all grid cells | ⚠️ only at 3 scenarios |
 | Backlog at end of slowdown | ✅ | ✅ | ✅ |
 | Attempt rate when stuck | ✅ | ✅ | ✅ |
 | Time to recovery | ✅ rough estimate | ✅ | ✅ |
