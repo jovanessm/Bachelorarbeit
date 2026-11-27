@@ -17,3 +17,11 @@
 | 2026-11-23 | Hypotheses trimmed to H1–H5 + simulator/testbed agreement criterion |
 | 2026-11-23 | Client retries: R = 3, retry on timeouts and errors, exponential backoff 100/200/400 ms with full jitter, T = 1 s per attempt |
 | 2026-11-23 | Simulator grid: 5 loads (50–90%) × 6 slowdown durations (1–40 s), slowdown factor k = 2, 10 seeds (3,300 runs) |
+| 2026-11-27 | Load and model defined per backend B: μ = one backend's capacity, ρ = load on B, generator total rate = ρμ ÷ s_B |
+| 2026-11-27 | Retries keep their key (same backend); no failover, an open breaker rejects |
+| 2026-11-27 | Thresholds use requests in system N (waiting + in service): N* = μT with the current phase's capacity (100 normal, 50 during slowdown) |
+| 2026-11-27 | Shared retry budget: B's effective ratio b/s_B, recovery if b < s_B(1/ρ − 1), stated as steady-state approximation |
+| 2026-11-27 | Deadline drop: drop if now + S ≥ attempt deadline, nominal S = 40 ms; gateway drops expired only |
+| 2026-11-27 | Deadlines per attempt; goodput by per-attempt deadline (primary), request latency first send → success (secondary); recovery judged on B's goodput |
+| 2026-11-27 | Log client attempts per backend and gateway forwarded per backend separately; offered work = forwarded to B |
+| 2026-11-27 | Simplified to **one backend** (was A healthy + B slowed). With key routing and no failover A never interacts with B; breaker cost for partial traffic and shared-budget dilution (b/s) derived analytically. Supersedes the per-backend / s_B entries above; retry budget rule back to b < 1/ρ − 1 |

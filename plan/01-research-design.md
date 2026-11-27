@@ -9,7 +9,7 @@
 | # | Hypothesis | RQ |
 |---|---|---|
 | H1 | Above a load-dependent slowdown duration, the unprotected chain ends in metastability-consistent non-recovery, while the no-retry control under the same trigger recovers. | RQ1 |
-| H2 | After a large stale backlog has formed (TODO: define large stale backlog: e.g. queue ≥ 3 × μT at the end of the slowdown ❓), retry budget alone recovers more slowly than deadline drop alone. | RQ2 |
+| H2 | After a large stale backlog has formed (TODO: define large stale backlog: e.g. N ≥ 3 × μT at the end of the slowdown ❓), retry budget alone recovers more slowly than deadline drop alone. | RQ2 |
 | H3 ✅ | Load shedding restores recovery only if its queue limit is at most about μT; with a higher limit the system stays stuck. The circuit breaker restores recovery, but fails all requests to the slowed backend while open, so its time to recovery grows with the open time. (Rewritten 2026-11-23 after prototype, see `10-prototype-findings.md`.) | RQ2 |
 | H4 | In normal operation, retry budget and deadline drop cost almost nothing, while load shedding rejects a measurable share of requests at the higher load level. | RQ2 |
 | H5 | Retry budget + deadline drop recovers at high load with long slowdowns, where neither mechanism recovers alone, while at low load with short slowdowns a single mechanism is enough. | RQ3 |
@@ -18,17 +18,20 @@
 ## Definitions ✅
 | Term | Definition |
 |---|---|
-| Capacity μ | Max requests/s the backend can finish (workers ÷ service time), measured in calibration |
-| Load ρ | Fresh arrival rate as a fraction of μ |
-| Goodput | Unique original requests answered successfully before their deadline, per 1 s interval |
+| Capacity μ | Max requests/s the backend can finish (c workers ÷ service time S, 4 ÷ 40 ms = 100), measured in calibration |
+| Load ρ | Fresh arrival rate as a fraction of μ (λ = ρμ) |
+| Goodput | Unique original requests that succeed: at least one attempt returned ok before that attempt's deadline (attempt send time + T). Counted in the 1 s interval of success. |
 | Recovered | Goodput ≥ 90% of pre-trigger level for 5 consecutive 1 s intervals |
 | Observation window | 120 s after the slowdown ends |
 | Time to recovery | End of slowdown to start of the 5 s recovered period |
 | Retry amplification | Total attempts ÷ original requests |
+| Request latency | First send of the original request to its successful response, across retries (max ≈ 4.7 s). Secondary metric, p50/p99. Not end-to-end deadline compliance |
+| Request failure rate | Share of original requests that fail after all retries |
+| Offered work | Attempts forwarded to the backend by the gateway per second (client attempts minus breaker rejections, shedding, gateway drops) |
 | Wasted work | Share of server processing spent on already-expired requests |
 | Recovery boundary | Longest slowdown in the grid after which the chain still recovers |
-| Healthy-state cost | Goodput, p99 latency, rejection rate without trigger |
-| Queue | Pending requests at gateway + both backends; trend = slope of linear fit over last 30 s |
+| Healthy-state cost | Goodput, p99 request latency, rejection rate without trigger |
+| Queue N | Requests in system at the backend (waiting + in service); waiting queue = N − busy workers; gateway in-flight logged separately; trend = slope of linear fit of N over last 30 s |
 
 Report results in **relative units** (ρ, slowdown duration as multiple of timeout D/T), so the guide transfers to other systems.
 
@@ -37,9 +40,9 @@ Report results in **relative units** (ρ, slowdown duration as multiple of timeo
 |---|---|
 | Recovered | Recovered within the 120 s window |
 | Slow recovery | Not recovered in window, but queue trend negative, or recovers in extended run |
-| Metastability-consistent non-recovery | Not recovered; attempts ≥ capacity; queue trend ≥ 0 and queue stays above μT; still not recovered in extended 10 min run |
+| Metastability-consistent non-recovery | Not recovered; attempts forwarded to the backend ≥ μ; N trend ≥ 0 and N stays above μT; still not recovered in extended 10 min run |
 | Non-recovery, not extended | Testbed only: not recovered, not selected for extension |
-| Unexplained non-recovery | Not recovered, attempts below capacity: other cause, reported separately |
+| Unexplained non-recovery | Not recovered, attempts forwarded to the backend below capacity: other cause, reported separately |
 
 Metastability is defined by the sustaining loop, not by a time limit. Finite runs show consistency with metastability, not proof.
 

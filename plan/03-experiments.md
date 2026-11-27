@@ -26,7 +26,7 @@ The 3 testbed scenarios are taken from the **simulator's map of the unprotected 
 |---|---|---|---|
 | A: mild | All baseline seeds recover, middle load | 60% load, 2 s | H5 (single mechanism enough), no false alarms |
 | B: boundary | ~30–70% of baseline seeds stuck | 70% load, 5 s | Where the guide's recommendations change |
-| C: severe | All baseline seeds stuck, queue ≥ 3 × μT at end of slowdown | 80% load, 20 s | H2, H3, H5 |
+| C: severe | All baseline seeds stuck, N ≥ 3 × μT at end of slowdown | 80% load, 20 s | H2, H3, H5 |
 All 11 configurations run in each scenario. Optional 4th scenario near a single mechanism's boundary: candidate for the guide check.
 
 ## Positive controls ✅
@@ -36,7 +36,7 @@ One scenario per mechanism where it should clearly work; part of mechanism verif
 | Retry budget | Moderate load, short slowdown | Amplification near 1 + ratio, recovers |
 | Deadline drop | Large stale backlog | Expired/hopeless requests dropped, queue empties within seconds |
 | Load shedding | No retries, short burst above 100% load | Queue at limit, accepted requests within timeout |
-| Circuit breaker | Backend B fails hard (errors) | Opens, fails fast, A unaffected, probe closes it later |
+| Circuit breaker | Backend fails hard (errors) | Opens, fails fast, probe closes it later |
 
 ## Machine and protocol ✅
 - Main testbed batch on one **dedicated Linux machine** (old laptop with Ubuntu, else cheap cloud VM). Develop and pilot on the Mac.
@@ -58,7 +58,7 @@ per request → per second → **per run summary** → **per cell** (config × l
 | Baseline vs. no-retry control | Stuck vs. recovered: retries cause the failure (RQ1, H1) |
 | Baseline across load × slowdown | Recovery boundary (RQ1) |
 | The 4 single mitigations | Outcome, time to recovery, retry amplification, wasted work (RQ2, H2, H3) |
-| Mitigations in normal operation | Goodput, p99 latency, rejection rate = healthy-state cost (H4) |
+| Mitigations in normal operation | Goodput, p99 request latency, rejection rate = healthy-state cost (H4) |
 | Pairs vs. their single mitigations | Outcome, time to recovery (RQ3, H5) |
 
 **2. Model, simulator and testbed against each other (validation).** Shows the answers can be trusted.

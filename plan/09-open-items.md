@@ -2,8 +2,9 @@
 
 ## Decisions ❓
 - Map the 8-week plan onto official dates (start/registration date).
+- Retry budget bucket capacity C (proposal ~10 tokens, starts full).
 - Budget ratio; breaker threshold; shedding limit (fix before main runs; retry settings decided, see `02-system-design.md`).
-- Workers and service time per backend (e.g. 4 × 40 ms).
+- Workers and service time of the backend (e.g. 4 × 40 ms).
 - Testbed transport: plain asyncio TCP vs. aiohttp.
 - Threshold for "large backlog" in H2 (proposal: queue ≥ 3 × μT at end of slowdown).
 - ✅ Add 1% random errors to the healthy (no-trigger) scenario, so the costs of retry budget and circuit breaker become visible.
@@ -14,6 +15,7 @@
 
 ## To-dos
 - [ ] Exposé v2 due **24.11.2026**: update to new framing, answer Prof. Hahn's 3 questions (mechanism verification, data reduction, ResilienceBench), corrected references.
+- [ ] Exposé v3 due **29.11.2026**: one sentence on the simplification to one backend (reason: no interaction without failover; multi-backend effects derived analytically).
 - [ ] Read `thesis/org/empfehlungen_zu_abschlussarbeiten.pdf` and `anleitung_expose.pdf` (page count, required structure).
 - [ ] Confirm with Alte Leipziger that a company-independent topic is fine.
 - [ ] 1–2 day spike on the Mac before registering.

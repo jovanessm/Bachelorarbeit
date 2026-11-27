@@ -1,6 +1,6 @@
 # Prototype findings (feasibility simulator, not thesis code)
 
-Simplified simulator in Claude's workspace: one backend (FIFO, exponential service times, capacity 100 req/s), open-loop Poisson client, T = 1 s, R = 3, no gateway, 3–5 seeds. Results are **pointers, not evidence for the thesis**. Last run 2026-11-23.
+Simplified simulator in Claude's workspace: one backend (FIFO, exponential service times, capacity 100 req/s), open-loop Poisson client, T = 1 s, R = 3, no gateway, 3–5 seeds. Results are **pointers, not evidence for the thesis**. Last run 2026-11-23. Its single backend matches the thesis design (μ = 100); the thesis adds a gateway in front.
 
 ## 1. Baseline and controls (80% load)
 | Configuration | Result |
@@ -39,4 +39,4 @@ Backoff does not prevent the stuck state (attempt rate unchanged), as the model 
 | 10 s | 2–12 s | 4–12 s |
 | 30 s | 22–27 s | 12–17 s |
 → Recovers with all tested open times (backlog drains while open); long open time delays recovery. Old prediction "breaker alone does not help" was wrong → H3 rewritten.
-Caveat: one backend, so the breaker blocks all traffic; with two backends it only blocks B.
+The thesis design also has one backend, so an open breaker blocks all traffic (worst-case cost; with several backends the cost scales with the slowed backend's traffic share, see `04`).
